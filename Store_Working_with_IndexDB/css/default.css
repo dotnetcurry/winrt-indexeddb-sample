@@ -1,0 +1,38 @@
+﻿body {
+}
+
+#accept input:valid { 
+    border :solid yellow;
+    font-weight:normal;
+  }
+  #accept input:invalid { 
+    border:solid red;
+    font-weight:bold;
+  }
+
+
+@media screen and (-ms-view-state: fullscreen-landscape) {
+}
+
+@media screen and (-ms-view-state: filled) {
+}
+
+@media screen and (-ms-view-state: snapped) {
+}
+
+@media screen and (-ms-view-state: fullscreen-portrait) {
+}
+
+text {
+ width:80px;
+ height:30px;
+}
+button {
+ width:80px;
+ height:30px;
+}
+.controlPanel .win-toggleswitch {
+    width: 90%;
+    margin: 15px;
+    padding-left: 20px;
+}

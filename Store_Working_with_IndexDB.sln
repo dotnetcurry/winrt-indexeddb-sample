@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "Store_Working_with_IndexDB", "Store_Working_with_IndexDB\Store_Working_with_IndexDB.jsproj", "{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Debug|ARM.ActiveCfg = Debug|ARM
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Debug|ARM.Build.0 = Debug|ARM
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Debug|ARM.Deploy.0 = Debug|ARM
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Debug|x64.ActiveCfg = Debug|x64
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Debug|x64.Build.0 = Debug|x64
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Debug|x64.Deploy.0 = Debug|x64
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Debug|x86.ActiveCfg = Debug|x86
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Debug|x86.Build.0 = Debug|x86
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Debug|x86.Deploy.0 = Debug|x86
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Release|ARM.ActiveCfg = Release|ARM
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Release|ARM.Build.0 = Release|ARM
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Release|ARM.Deploy.0 = Release|ARM
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Release|x64.ActiveCfg = Release|x64
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Release|x64.Build.0 = Release|x64
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Release|x64.Deploy.0 = Release|x64
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Release|x86.ActiveCfg = Release|x86
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Release|x86.Build.0 = Release|x86
+		{AB1F7EC7-269D-4D6C-A83C-C6F7916329BE}.Release|x86.Deploy.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,426 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Store_Working_with_IndexDB</title>
+
+    <!-- WinJS references -->
+    <link href="//Microsoft.WinJS.1.0/css/ui-dark.css" rel="stylesheet" />
+    <script src="//Microsoft.WinJS.1.0/js/base.js"></script>
+    <script src="//Microsoft.WinJS.1.0/js/ui.js"></script>
+
+    <!-- Store_Working_with_IndexDB references -->
+    <link href="/css/default.css" rel="stylesheet" />
+    <script src="/js/default.js"></script>
+    <!--<script src="js/applogic.js"></script>-->
+    <script type="text/javascript">
+
+        var selectedDate = "";
+        var orderDB;
+        var dbCreated = false;
+        var orderToEdit = {};
+        var transaction;
+        var tbl;
+        WinJS.UI.processAll().done(function () {
+
+            //Code commented whihc delete the database
+
+            //var dbRequest = window.indexedDB.deleteDatabase("OrdersDB");
+            //dbRequest.onsuccess = function () {
+            //    var md2 = new Windows.UI.Popups.MessageDialog(" Db Deleted");
+            //    md2.showAsync();
+            //};
+
+            //Ends here
+
+            document.getElementById('btnnew').addEventListener("click", neworder, false);
+            document.getElementById('btnsave').addEventListener("click", saveOrder, false);
+            document.getElementById('btnedit').addEventListener('click', editOrder, false);
+            document.getElementById('btndelete').addEventListener('click', deleteOrder, false);
+            document.getElementById('btnloadrecord').addEventListener('click', loadOrderById, false);
+
+            datePickerControl = document.getElementById('datePicker').winControl;
+            datePickerControl.current = new Date(); //The Current Date
+            selectedDate = datePickerControl.current; //The Default Date
+            datePickerControl.addEventListener("change", dateChanged, false);
+
+        });
+
+        //The method to Get the Selected Date from the Date Picker
+        function dateChanged(evt) {
+            selectedDate = datePickerControl.current;
+
+            if (selectedDate < new Date())
+            {
+                var Msg = new Windows.UI.Popups.MessageDialog("Date Cannot be less than Todays Date");
+                Msg.showAsync();
+                return;
+            }
+        }
+        //Ends Here
+
+        //Method to Create Database and Table
+        function createdatabase() {
+
+            orderDB = window.indexedDB.open("OrdersDB", 1); //Name of the database
+            //Create Object Store
+            orderDB.onupgradeneeded = function (e) {
+              
+                var ordDb = e.target.result;
+
+                transaction = e.target.result
+
+                //Create Table. Here the Name of the Table is 'NewOrderStore' and the key is set to name as 'id'
+                tbl = ordDb.createObjectStore("NewOrderStore", { keyPath: "id"});
+
+                //The column metadata 
+                var columnOptions = { unique: false, multientry: false };
+
+                //Define the Columns
+                tbl.createIndex("StockiestName1", "StockiestName", columnOptions);
+                tbl.createIndex("OrderDate1", "OrderDate", columnOptions);
+                tbl.createIndex("OrderMedicine1", "OrderMedicine", columnOptions);
+                tbl.createIndex("Quantity1", "Quantity", columnOptions);
+                tbl.createIndex("UnitPrice1", "UnitPrice", columnOptions);
+                tbl.createIndex("TotalPrice1", "TotalPrice", columnOptions);
+
+                 
+                var md = new Windows.UI.Popups.MessageDialog("DB Created");
+                md.showAsync();
+            };
+            //If the DB creation is successful
+            orderDB.onsuccess = function (e) {
+                if (dbCreated) {
+
+                    var dd = e.target.result;
+
+                    transaction = e.target.result;
+
+                    var dbName = transaction.name;
+
+                    loadOrder(); //Load Orders if Table is already Available
+
+                }
+            };
+
+
+            dbCreated = true;
+        }
+        //Ends Here
+        //The Method to delete Database
+        function deletedatabase()
+        {
+            var dbRequest =  window.indexedDB.deleteDatabase("OrdersDB");
+            dbRequest.onsuccess = function () {
+                var md2 = new Windows.UI.Popups.MessageDialog(" Db Deleted");
+                md2.showAsync();
+            };
+        }
+        //Ends Here
+
+        //The Method to Create New Order
+        function neworder()
+        {
+            document.getElementById('txtordno').value = "";
+            document.getElementById('txtstockiest').value = "";
+            document.getElementById('txtordermedicine').value = "";
+            document.getElementById('txtqty').value = "";
+            document.getElementById('txtunitprice').value = "";
+            document.getElementById('txtprice').value = "";
+        }
+        //Ends Here
+
+
+
+        //The method to Save Record
+        function saveOrder() {
+            var db = window.indexedDB.open("OrdersDB");
+                
+            if (db) {
+                db.onsuccess = function (e) {
+                    //S1: Get the Transaction for the ObjectStore, here in this case it is for readwrite 
+                    var orderStore = e.target.result.transaction("NewOrderStore", "readwrite");
+                    //S2: Get the object store object
+                    var tbl = orderStore.objectStore("NewOrderStore");
+ 
+                    //S3: Read values entered in each textbox and also the selected date 
+                    var id = document.getElementById('txtordno').value;
+                    var sockiestName = document.getElementById('txtstockiest').value;
+                    var orderDate = selectedDate;
+                    var orderMedicine = document.getElementById('txtordermedicine').value;
+                    var quantity = document.getElementById('txtqty').value;
+                    var unitProce = document.getElementById('txtunitprice').value;
+                    var totalPrice = parseInt(document.getElementById('txtunitprice').value) * parseInt(document.getElementById('txtqty').value);
+
+
+                    //S4: Add the values against each keypath on object store
+                    var saveOperation = tbl.add({
+                        "id": id,
+                        "StockiestName": sockiestName ,
+                        "OrderDate":orderDate ,
+                        "OrderMedicine": orderMedicine,
+                        "Quantity": quantity,
+                        "UnitPrice": unitProce,
+                        "TotalPrice": totalPrice  
+                    });
+
+                 
+
+
+                    saveOperation.onsuccess = function (e) {
+                        var res = document.getElementById("txtres");
+                        res.value = "Saved" + e.target.result;
+                    };
+
+                    saveOperation.onerror = function (e) {
+                        var res = document.getElementById("txtres");
+                        res.value = "Error Occured" + e.value;
+                    };
+
+                    document.getElementById('txtprice').value = totalPrice;
+                };
+
+             
+                loadOrder(); //Load Orders if Table is already Available
+            }
+
+
+        }
+        //Ends Here
+
+        //The method to Edit Record
+        function editOrder() {
+            var ordno = document.getElementById('txtordno');
+            var id = ordno.value;
+            //S1: Open Database
+            var db = window.indexedDB.open("OrdersDB");
+            if (db) {
+                db.onsuccess = function (e) {
+                    //S2: Set the transaction on the ObjectStore for read-write operation
+                    var transaction = e.target.result.transaction("NewOrderStore", "readwrite");
+                    var tbl = transaction.objectStore("NewOrderStore");
+                    //S3: Use 'get' method to get the record details 
+                    var requestToUpdate = tbl.get(id).onsuccess = function (e) {
+                        //S4: Assign the record to the 'Order object' of name 'orderToEdit'
+                        orderToEdit = e.target.result;
+
+                        //S5: Assign the New values
+                        orderToEdit.StockiestName = document.getElementById('txtstockiest').value;
+                        orderToEdit.OrderDate = selectedDate;
+                        orderToEdit.OrderMedicine = document.getElementById('txtordermedicine').value;
+                        orderToEdit.Quantity = document.getElementById('txtqty').value;
+                        orderToEdit.UnitPrice = document.getElementById('txtunitprice').value;
+                        orderToEdit.TotalPrice = parseInt(document.getElementById('txtunitprice').value) * parseInt(document.getElementById('txtqty').value);
+
+                        //S6: Update the Record using Put method
+
+                        var req = tbl.put(orderToEdit);
+                        req.onsuccess = function (e) {
+                            var res = document.getElementById("txtres");
+                            res.value = "Update Completed Successfully" + e.target.result;
+                            document.getElementById('txtprice').value = orderToEdit.TotalPrice;
+                        };
+                        req.onerror = function (e) {
+                            var res = document.getElementById("txtres");
+                            res.value = "Error Occured" + e.target.result;
+                        };
+                    };
+                };
+                loadOrder();
+            }
+        }
+        //Ends Here
+
+        //The Method to Delete Record
+        function deleteOrder() {
+            var ordno = document.getElementById('txtordno');
+            id = ordno.value;
+            //S1: Open the database
+            var db = window.indexedDB.open("OrdersDB");
+            if (db) {
+                db.onsuccess = function (e) {
+                    //S2: Set the transaction to perform 'readwrite' operation
+                    var transaction = e.target.result.transaction("NewOrderStore", "readwrite");
+
+                    var objectStore = transaction.objectStore("NewOrderStore");
+                    //S3: Delete the record using 'delete' method. 
+                    var delRequest = objectStore.delete(id);
+                };
+            }
+            loadOrder();
+            neworder();
+        }
+        //Ends Here
+
+        //The Metod to Read all Records 
+        function loadOrder() {
+         //   debugger;
+            var orders = [];
+            var resHTML = "";
+            //S1: open the database
+            var db = window.indexedDB.open("OrdersDB");
+            if (db)
+            {
+                db.onsuccess = function (e) {
+                    //S2: Get transaction object for the Object Store for performing operation 
+                    var transaction =e.target.result.transaction("NewOrderStore", "readonly");
+                    //S3: Begin the transaction on the object store
+                    var objectStore = transaction.objectStore("NewOrderStore");
+
+                    //S4: On the completion of the transaction generate HTML table dynamically
+                    transaction.oncomplete = function () {
+                        resHTML = "<table border='1'><tr><th>OrderId</th><th>StockitestName</th><th>OrderDate</th><th>OrderMedicine</th><th>OrderQuantity</th><th>UnitPrice</th><th>TotalPrice</th></tr>";
+                        for (var i = 0; i < orders.length; i++) {
+                            resHTML += "<tr><td>" + orders[i].id + "</td><td>" + orders[i].StockiestName + "</td><td>" +
+                                orders[i].OrderDate + "</td><td>" + orders[i].OrderMedicine + "</td><td>" + orders[i].Quantity +
+                                "</td><td>" + orders[i].UnitPrice + "</td><td>" + orders[i].TotalPrice + "</td></tr>";
+                           
+                        }
+                        resHTML+="</table>"
+                        
+                        var resDiv = document.getElementById('dvData');
+                        resDiv.innerHTML = resHTML;
+                    };
+
+
+                    //S5: Set the Cursor for Reading Orders from object store. This points to the first record in the source
+                    var orderCursor = objectStore.openCursor();
+                    //S6: Add each record in the Array of name 'orders'
+                    orderCursor.onsuccess = function (e) {
+                        var reader = e.target.result;
+                        if (reader) {
+                            orders.push(reader.value);
+                            reader.continue();
+                        }
+                    };
+                };
+            }
+        }
+        //Ends Here
+
+        //The method to Load the Record by Id
+        function loadOrderById(id)
+        {
+            var ordno = document.getElementById('txtordno');
+            
+            id = ordno.value;
+            //S1: Open the database
+            var db = window.indexedDB.open("OrdersDB");
+            if (db) {
+                db.onsuccess = function (e) {
+                    //S2: Begin the transaction on the object store
+                    var transaction = e.target.result.transaction("NewOrderStore", "readonly");
+
+                    var objectStore = transaction.objectStore("NewOrderStore");
+                    //S3: Set the cursor based upon the id (key) of the record 
+                    var orderCursor = objectStore.openCursor(id);
+                    //S4: Show the record in the textboxes and datepicker control 
+                    orderCursor.onsuccess = function (e) {
+                        var reader = e.target.result;
+                        if (reader) {
+                            document.getElementById('txtstockiest').value = reader.value.StockiestName;
+                            datePickerControl.current = reader.value.OrderDate;
+                            document.getElementById('txtordermedicine').value = reader.value.OrderMedicine;
+                            document.getElementById('txtqty').value = reader.value.Quantity;
+                            document.getElementById('txtunitprice').value = reader.value.UnitPrice;
+                            document.getElementById('txtprice').value = reader.value.TotalPrice;
+                        }
+                    };
+                };
+            }
+        }
+        //Ends Here
+
+
+
+        //The Initial method to be executed
+        window.addEventListener("DOMContentLoaded", createdatabase, false);
+    </script>
+</head>
+<body>
+    
+    <p>Content goes here</p>
+
+    <table>
+        <thead>
+            <tr>
+                <td style="font-size:xx-large">Manage Medicine Orders</td>
+            </tr>
+        </thead>
+        <tr>
+            <td>Order Id</td>
+            <td>
+                <input type="text" id="txtordno" required="required" />
+            </td>
+        </tr>
+        <tr>
+            <td>Stockiest Name</td>
+            <td>
+                <input type="text" autocomplete="on" id="txtstockiest"  required="required"/>
+            </td>
+        </tr>
+        <tr>
+            <td>Order Date
+            </td>
+            <td>
+             <div id="datePicker" data-win-control="WinJS.UI.DatePicker"  data-win-options="{current: '01/01/2013',maxYear:2040,minYear:2012}"></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Medicine  Ordered
+            </td>
+            <td>
+                <input type="text" id="txtordermedicine"  required="required"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Medicine  Quantity
+            </td>
+            <td>
+                <input type="text" id="txtqty" required="required" />
+            </td>
+        </tr>
+        <tr>
+            <td>Unit Price
+            </td>
+            <td>
+                <input type="text" id="txtunitprice"  required="required"/>
+            </td>
+        </tr>
+        <tr>
+            <td>Total Price
+            </td>
+            <td>
+                <input type="text" id="txtprice"  readonly="true"/>
+            </td>
+        </tr>
+        <tfoot>
+            <tr>
+                <td>
+                    <input type="button" id="btnnew" value="New" />
+                </td>
+                <td>
+                    <input type="button" id="btnsave" value="Save" />
+                </td>
+                <td>
+                    <input type="button" id="btnedit" value="Edit" />
+                </td>
+                <td>
+                    <input type="button" id="btndelete" value="Delete" />
+                </td>
+                <td>
+                    <input type="button" id="btnloadrecord" value="Load Record" />
+                </td>
+                                <td>
+                    <input type="text" id="txtres" value=""  readonly="true" style="visibility:hidden"/>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+    <!--To display Table Dynamically-->
+    <div id="dvData"></div>
+
+</body>
+</html>
